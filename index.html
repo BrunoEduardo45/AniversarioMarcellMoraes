@@ -20,8 +20,9 @@
             <h1 style="font-size: 38px;">80 Escolhidos!</h1>
 
             <p>
-                Você está entre as 80 pessoas que eu mais gosto e, <br>
-                por isso, é meu convidado especial para celebrar <br>
+                Você está entre as 80 pessoas que eu 
+                mais gosto e, por isso, é meu 
+                convidado especial para celebrar
                 comigo essa data única!
             </p>
 
@@ -35,8 +36,8 @@
                 COM UM CANTOR CONHECIDO NACIONALMENTE</h1>
 
             <p>
-                Este será um aniversário totalmente diferente, <br>
-                preparado com muito carinho e pensado para <br>
+                Este será um aniversário totalmente diferente,
+                preparado com muito carinho e pensado para
                 proporcionar momentos inesquecíveis.
             </p>
 
@@ -96,7 +97,8 @@
                     <div
                         style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; text-align: center; margin-top: 28px; margin-bottom: 16px;">
                         <div id="loading" style="display: none;">Carregando...</div>
-                        <div style="margin-top: 8px;" id="qrcode">Selecione alguma das opções <br>ou digite um valor abaixo</div>
+                        <div style="margin-top: 8px;" id="qrcode">Selecione alguma das opções <br>ou digite um valor
+                            abaixo</div>
                         <div id="valor" class="valor"></div>
                         <button type="button" id="copiar-link"
                             style="display: none; background-color: #e7e7e7; color: black; margin-top: 15px;">
@@ -104,8 +106,12 @@
                         </button>
                     </div>
 
-                    <h4>Ou, escolha o valor que você deseja doar, <br>preencha abaixo e clique em gerar Pix:</h4>
-                    <p style="text-align: center;">Juntos podemos fazer a diferença! <br>Escolha o valor que o seu
+                    <h4>
+                        Ou, escolha o valor que você deseja <br>
+                        doar, preencha abaixo e <br>
+                        clique em gerar Pix:
+                    </h4>
+                    <p style="text-align: center;">Juntos podemos fazer a diferença! Escolha o valor que o seu
                         coração mandar.</p>
                     <input type="number" id="donation-amount" placeholder="Digite o valor em R$"
                         style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ddd;">
@@ -153,6 +159,7 @@
 
             qrcodeDiv.innerHTML = `<img src="./assets/img/qrcode.png" alt="QR Code Fixado" style="width: 150px; height: 150px;">`;
             loadingDiv.style.display = 'none';
+            copiarBtn.style.display = 'block';
         }
 
         document.querySelectorAll('.gift-option').forEach(option => {
@@ -192,9 +199,13 @@
             }
         });
 
+        // Link Pix fixo que você forneceu
+        const pixLink = "00020126360014BR.GOV.BCB.PIX0114058552620001515204000053039865802BR5901N6001C62180514DoacaoOngGeamo63047B1B";
+
+        // Atualize a parte onde o botão de copiar é manipulado
         copiarBtn.addEventListener('click', function () {
-            const pixCode = copiarBtn.getAttribute('data-clipboard-text');
-            navigator.clipboard.writeText(pixCode).then(() => {
+            // Copia o link fixo do Pix
+            navigator.clipboard.writeText(pixLink).then(() => {
                 alert("Link do Pix copiado com sucesso!");
             }).catch((err) => {
                 console.error("Erro ao copiar o link: ", err);
