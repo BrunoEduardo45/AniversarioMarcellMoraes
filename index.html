@@ -61,6 +61,7 @@
             appId: "1:759578737563:web:9ca99e13ab16b9de163f3e"
         };
 
+        // Inicializando o Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -127,10 +128,11 @@
             const nome = nomeInput.value;
             const opcao = opcaoSelect.value;
 
-            db.collection('confirmados').add({
+            // Usando o método addDoc para adicionar um novo documento na coleção
+            addDoc(collection(db, 'confirmados'), {
                 nome: nome,
                 opcao: opcao,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: serverTimestamp()
             })
                 .then(() => {
                     alert('Sua presença foi confirmada! Obrigado pelo presente.');
@@ -141,6 +143,7 @@
                     alert('Ocorreu um erro. Tente novamente.');
                 });
         });
+
     </script>
 </body>
 
