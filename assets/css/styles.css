@@ -171,13 +171,20 @@ h4 {
 .gift-option.selected {
     border: 2px solid #614112;
     background-color: #f4d37f;
+    color:#614112;
 }
 
 .gift-option.selected h5,
 .gift-option.selected p {
-    color: #fff;
+    color: #614112;
 }
 
+#loading {
+    display: none;
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+}
 
 @media (max-width: 480px) {
   .form-container {

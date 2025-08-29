@@ -9,14 +9,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 
   <style>
-
-
     .container {
       width: 80%;
       margin: 50px auto;
     }
 
-    /* Container da lista */
     .confirmados-container {
       background-color: #eeffee;
       padding: 20px;
@@ -24,21 +21,18 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Título */
     h1 {
       text-align: center;
       color: #333;
       font-size: 24px;
     }
 
-    /* Lista de confirmados */
     #confirmados-lista {
       list-style-type: none;
       padding: 0;
       margin-top: 20px;
     }
 
-    /* Estilo de cada item da lista */
     #confirmados-lista li {
       display: flex;
       justify-content: space-between;
@@ -51,20 +45,11 @@
       font-size: 18px;
     }
 
-    /* Nome alinhado à esquerda e valor à direita */
     #confirmados-lista li span:first-child {
       text-align: left;
       flex: 2;
     }
 
-    #confirmados-lista li span:last-child {
-      text-align: right;
-      flex: 1;
-      color: #4CAF50; /* Cor do valor (valor em verde) */
-      font-weight: bold;
-    }
-
-    /* Botão de imprimir */
     #imprimir-btn {
       display: block;
       margin-top: 20px;
@@ -91,7 +76,6 @@
       <ul id="confirmados-lista">
         <!-- Os confirmados serão listados aqui -->
       </ul>
-      <!-- Botão para imprimir -->
       <button id="imprimir-btn" onclick="window.print();">Imprimir Lista</button>
     </div>
   </div>
@@ -128,20 +112,15 @@
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         const nome = data.nome;
-        const opcao = data.opcao;
-        
-        // Cria um item de lista com nome e valor
+
+        // Cria um item de lista com nome
         const listItem = document.createElement('li');
         
         const nomeSpan = document.createElement('span');
         nomeSpan.textContent = nome;
         
-        const opcaoSpan = document.createElement('span');
-        opcaoSpan.textContent = `R$ ${opcao}`;
-
-        // Adiciona os spans ao item de lista
+        // Adiciona o nome ao item de lista
         listItem.appendChild(nomeSpan);
-        listItem.appendChild(opcaoSpan);
         
         // Adiciona o item à lista
         confirmadosLista.appendChild(listItem);

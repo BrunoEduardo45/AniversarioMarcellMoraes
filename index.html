@@ -14,6 +14,8 @@
     <div class="container">
         <div class="form-container">
 
+            <img style="width: 100%;" src="./assets/img/Sem Título-1.png" alt="">
+
             <h1 style="color: #614112; font-size: 32px; margin-bottom: 0px;">Você Está Entre os</h1>
             <h1 style="font-size: 38px;">80 Escolhidos!</h1>
 
@@ -44,7 +46,7 @@
                     <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
 
                     <h4>
-                        Ajude os animais da ONG GEAMO adiquirindo uma as opções de presente abaixo:
+                        Ajude os animais da ONG GEAMO adquirindo uma das opções de presente abaixo:
                     </h4>
 
                     <!-- Gift Options Grid -->
@@ -93,8 +95,8 @@
 
                     <div
                         style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; text-align: center; margin-top: 28px; margin-bottom: 16px;">
-                        <div style="margin-top: 8px;" id="qrcode">Selecione alguma das opções <br>ou digite um valor
-                            abaixo</div>
+                        <div id="loading" style="display: none;">Carregando...</div>
+                        <div style="margin-top: 8px;" id="qrcode">Selecione alguma das opções <br>ou digite um valor abaixo</div>
                         <div id="valor" class="valor"></div>
                         <button type="button" id="copiar-link"
                             style="display: none; background-color: #e7e7e7; color: black; margin-top: 15px;">
@@ -102,10 +104,9 @@
                         </button>
                     </div>
 
-                    <h4>Ou, escolha o valor que você deseja doar, <br>preencha a baixo e clique em gerar PIX:</h4>
+                    <h4>Ou, escolha o valor que você deseja doar, <br>preencha abaixo e clique em gerar Pix:</h4>
                     <p style="text-align: center;">Juntos podemos fazer a diferença! <br>Escolha o valor que o seu
-                        coração
-                        mandar.</p>
+                        coração mandar.</p>
                     <input type="number" id="donation-amount" placeholder="Digite o valor em R$"
                         style="width: 100%; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #ddd;">
                     <button type="button" id="generate-pix"
@@ -114,14 +115,12 @@
 
                 </div>
                 <button style="margin-top: 16px;" type="submit" id="confirmar-btn" disabled><i
-                        class="fa-solid fa-calendar-check"></i> Confirmar
-                    Presença</button>
+                        class="fa-solid fa-calendar-check"></i> Confirmar Presença</button>
             </form>
 
         </div>
     </div>
 
-    <!-- Módulo com Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -135,95 +134,66 @@
             appId: "1:759578737563:web:9ca99e13ab16b9de163f3e"
         };
 
-        // Inicializando o Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variáveis de elementos
         const formulario = document.getElementById('formulario');
         const nomeInput = document.getElementById('nome');
-        const opcaoSelect = document.getElementById('opcao');
-        const valorDiv = document.getElementById('valor');
+        const donationAmountInput = document.getElementById('donation-amount');
         const qrcodeDiv = document.getElementById('qrcode');
-        const copiarBtn = document.getElementById('copiar-link');
+        const valorDiv = document.getElementById('valor');
         const confirmarBtn = document.getElementById('confirmar-btn');
+        const copiarBtn = document.getElementById('copiar-link');
+        const loadingDiv = document.getElementById('loading');
 
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-            }).format(value);
+        function updatePixCode(value) {
+            const pixCode = `00020126360014BR.GOV.BCB.PIX0114058552620001515204000053039865802BR5901N6001C62180514DoacaoOngGeamo63047B1B${value}`;
+            copiarBtn.setAttribute('data-clipboard-text', pixCode);
+            document.getElementById('valor').textContent = `Valor: R$ ${value}`;
+
+            qrcodeDiv.innerHTML = `<img src="./assets/img/qrcode.png" alt="QR Code Fixado" style="width: 150px; height: 150px;">`;
+            loadingDiv.style.display = 'none';
         }
 
-        // Gift option selection and Pix generation
         document.querySelectorAll('.gift-option').forEach(option => {
             option.addEventListener('click', function () {
-                // Remove 'selected' class from all options
                 document.querySelectorAll('.gift-option').forEach(opt => opt.classList.remove('selected'));
-
-                // Add 'selected' class to clicked option
                 option.classList.add('selected');
 
-                // Get the value for the selected gift option
                 const giftValue = option.getAttribute('data-value');
-                document.getElementById('valor').textContent = `Valor: ${formatCurrency(giftValue)}`;
+                donationAmountInput.value = '';
+                loadingDiv.style.display = 'block';  // Exibe o loading
+                qrcodeDiv.innerHTML = '';  // Limpa o QR Code
 
-                // Deselect donation input if any gift option is selected
-                document.getElementById('donation-amount').value = '';
-                // Disable donation button if selecting a gift
-                document.getElementById('generate-pix').disabled = false;
-
-                // Hide the "Copiar Link" button
-                document.getElementById('copiar-link').style.display = 'none';
-
-                // Generate QR Code based on selected gift value
-                document.getElementById('qrcode').innerHTML = 'Gerando QR Code...';
-                generatePix(giftValue);
+                updatePixCode(giftValue);
             });
         });
 
-        // Donation button click event
+        donationAmountInput.addEventListener('input', function () {
+            const value = donationAmountInput.value;
+            if (value) {
+                loadingDiv.style.display = 'block';  // Exibe o loading
+                qrcodeDiv.innerHTML = '';  // Limpa o QR Code
+                updatePixCode(value);
+            }
+        });
+
         document.getElementById('generate-pix').addEventListener('click', function () {
-            const donationAmount = document.getElementById('donation-amount').value;
+            const donationAmount = donationAmountInput.value;
             const selectedValue = document.querySelector('.gift-option.selected')?.getAttribute('data-value');
             const valueToGenerate = donationAmount || selectedValue;
 
             if (valueToGenerate) {
-                // Show loading message
-                document.getElementById('qrcode').innerHTML = 'Gerando QR Code...';
-
-                // Simulate delay for loading
-                setTimeout(function () {
-                    generatePix(valueToGenerate);
-                }, 1000); // Simulated delay
+                loadingDiv.style.display = 'block';  // Exibe o loading
+                qrcodeDiv.innerHTML = '';  // Limpa o QR Code
+                updatePixCode(valueToGenerate);
             } else {
                 alert("Por favor, insira um valor para a doação ou selecione uma opção.");
             }
         });
 
-        // Function to generate QR Code for Pix
-        function generatePix(value) {
-            const chavePix = '71985063857';
-            const identificadorComerciante = 'AniversarioMarcell';
-            const descricaoTransacao = 'DoacaoAnimais';
-
-            const pixCode = `00020126360014BR.GOV.BCB.PIX0136${chavePix}52040000530398654041${value}5802BR5925${identificadorComerciante}6009${descricaoTransacao}6304someQRCodeHash`;
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixCode)}&size=150x150`;
-
-            // Display QR Code
-            document.getElementById('qrcode').innerHTML = `<img src="${qrCodeUrl}" alt="QR Code Pix">`;
-            document.getElementById('valor').textContent = `Valor: ${formatCurrency(value)}`;
-
-            // Show the "Copy Link" button
-            document.getElementById('copiar-link').style.display = 'inline-block';
-
-            // Enable the Confirm button
-            document.getElementById('confirmar-btn').disabled = false;
-        }
-
-        // Copy Pix link to clipboard
-        document.getElementById('copiar-link').addEventListener('click', function () {
-            const pixCode = document.getElementById('copiar-link').getAttribute('data-clipboard-text');
+        copiarBtn.addEventListener('click', function () {
+            const pixCode = copiarBtn.getAttribute('data-clipboard-text');
             navigator.clipboard.writeText(pixCode).then(() => {
                 alert("Link do Pix copiado com sucesso!");
             }).catch((err) => {
@@ -231,55 +201,45 @@
             });
         });
 
-
         formulario.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const nome = nomeInput.value;
+            let valor = donationAmountInput.value;
 
-            // Obtém o valor da doação (se digitado no input) ou da opção selecionada
-            let valor = document.getElementById('donation-amount').value; // Valor do input
             if (!valor) {
-                // Se não houver valor no input, pega o valor da opção selecionada
                 valor = document.querySelector('.gift-option.selected')?.getAttribute('data-value');
             }
 
-            // Se não houver valor (nenhum presente selecionado e o input estiver vazio), exibe um erro
             if (!valor) {
                 alert("Por favor, insira um valor para a doação ou selecione uma opção.");
                 return;
             }
 
-            // Caso tenha vindo do input, converte o valor para um número válido
-            if (valor === document.getElementById('donation-amount').value) {
-                valor = parseFloat(valor.replace(",", "."));
-            }
+            valor = parseFloat(valor.replace(",", "."));
 
-            // Verifica se o valor é válido
             if (isNaN(valor) || valor <= 0) {
                 alert("Por favor, insira um valor válido.");
                 return;
             }
 
-            // Usando o método addDoc para adicionar um novo documento na coleção
             addDoc(collection(db, 'confirmados'), {
                 nome: nome,
-                valor: valor, // Envia o valor para o Firestore
+                valor: valor,
                 timestamp: serverTimestamp()
             })
                 .then(() => {
                     alert('Sua presença foi confirmada! Obrigado pelo presente.');
-                    nomeInput.value = ''; // Limpa o campo
-                    document.getElementById('valor').textContent = ''; // Limpa o valor exibido
-                    document.getElementById('donation-amount').value = ''; // Limpa o input de doação
-                    document.querySelectorAll('.gift-option').forEach(option => option.classList.remove('selected')); // Desmarca a seleção
+                    nomeInput.value = '';
+                    donationAmountInput.value = '';
+                    document.getElementById('valor').textContent = '';
+                    document.querySelectorAll('.gift-option').forEach(option => option.classList.remove('selected'));
                 })
                 .catch((error) => {
                     console.error('Erro ao salvar os dados: ', error);
                     alert('Ocorreu um erro. Tente novamente.');
                 });
         });
-
     </script>
 </body>
 
