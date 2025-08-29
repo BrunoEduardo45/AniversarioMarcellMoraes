@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmados - Marcell Moraes</title>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+  <style>
+
+
+    .container {
+      width: 80%;
+      margin: 50px auto;
+    }
+
+    /* Container da lista */
+    .confirmados-container {
+      background-color: #eeffee;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Título */
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 24px;
+    }
+
+    /* Lista de confirmados */
+    #confirmados-lista {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    /* Estilo de cada item da lista */
+    #confirmados-lista li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-size: 18px;
+    }
+
+    /* Nome alinhado à esquerda e valor à direita */
+    #confirmados-lista li span:first-child {
+      text-align: left;
+      flex: 2;
+    }
+
+    #confirmados-lista li span:last-child {
+      text-align: right;
+      flex: 1;
+      color: #4CAF50; /* Cor do valor (valor em verde) */
+      font-weight: bold;
+    }
+
+    /* Botão de imprimir */
+    #imprimir-btn {
+      display: block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+
+    #imprimir-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="confirmados-container">
+      <h1>Lista de Confirmados</h1>
+      <ul id="confirmados-lista">
+        <!-- Os confirmados serão listados aqui -->
+      </ul>
+      <!-- Botão para imprimir -->
+      <button id="imprimir-btn" onclick="window.print();">Imprimir Lista</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase Configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+            apiKey: "AIzaSyCPJhR9HJhVkvFFk9IjitLGfxJ2bvGgBiY",
+            authDomain: "aniversario-marcell-moraes.firebaseapp.com",
+            projectId: "aniversario-marcell-moraes",
+            storageBucket: "aniversario-marcell-moraes.firebasestorage.app",
+            messagingSenderId: "759578737563",
+            appId: "1:759578737563:web:9ca99e13ab16b9de163f3e"
+        };
+
+    // Inicializando o Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Função para carregar e exibir a lista de confirmados
+    async function carregarConfirmados() {
+      const confirmadosLista = document.getElementById('confirmados-lista');
+      
+      // Consulta para obter os dados da coleção 'confirmados'
+      const querySnapshot = await getDocs(query(collection(db, "confirmados"), orderBy("timestamp", "desc")));
+      
+      // Limpa a lista antes de adicionar os novos dados
+      confirmadosLista.innerHTML = '';
+      
+      // Itera sobre os dados e adiciona à lista
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const nome = data.nome;
+        const opcao = data.opcao;
+        
+        // Cria um item de lista com nome e valor
+        const listItem = document.createElement('li');
+        
+        const nomeSpan = document.createElement('span');
+        nomeSpan.textContent = nome;
+        
+        const opcaoSpan = document.createElement('span');
+        opcaoSpan.textContent = `R$ ${opcao}`;
+
+        // Adiciona os spans ao item de lista
+        listItem.appendChild(nomeSpan);
+        listItem.appendChild(opcaoSpan);
+        
+        // Adiciona o item à lista
+        confirmadosLista.appendChild(listItem);
+      });
+    }
+
+    // Chama a função para carregar os confirmados
+    carregarConfirmados();
+  </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirma Sua Presença - Aniversário Marcell Moraes</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Adicionando jQuery -->
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Confirme sua presença no aniversário de Marcell Moraes</h1>
+            <p>
+                Participe do nosso evento e ajude os animais! <br />Escolha um presente e confirme a sua presença!
+            </p>
+
+            <form id="formulario">
+                <h4 for="nome">Seu Nome Completo:</h4>
+                <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+
+                <h4>Escolha o presente que você <br />gostaria de oferecer aos animais:</h4>
+                <select id="opcao" name="opcao" required>
+                    <option value="">Selecione uma opção</option>
+                    <option value="500">5 Sacos de Ração - R$ 500</option>
+                    <option value="1000">10 Sacos de Ração - R$ 1.000</option>
+                    <option value="2000">20 Sacos de Ração - R$ 2.000</option>
+                    <option value="5000">50 Sacos de Ração - R$ 5.000</option>
+                    <option value="10000">1 Tonelada de Ração - R$ 10.000</option>
+                    <option value="35000">Samu Veterinário - R$ 35.000</option>
+                </select>
+
+                <div id="valor" class="valor" style="display: none;"></div>
+
+                <!-- O botão "Gerar QR Code" será removido assim que a opção for selecionada -->
+                <button type="button" id="gerar-pix" style="display:none;">Gerar QR Code Pix</button>
+
+                <div id="qrcode"></div>
+
+                <!-- Botão para copiar o link do Pix -->
+                <button type="button" id="copiar-link" style="display: none;">Copiar Link para o Pix</button>
+
+                <button type="submit" id="confirmar-btn" disabled>Confirmar Participação</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Módulo com Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPJhR9HJhVkvFFk9IjitLGfxJ2bvGgBiY",
+            authDomain: "aniversario-marcell-moraes.firebaseapp.com",
+            projectId: "aniversario-marcell-moraes",
+            storageBucket: "aniversario-marcell-moraes.firebasestorage.app",
+            messagingSenderId: "759578737563",
+            appId: "1:759578737563:web:9ca99e13ab16b9de163f3e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Variáveis de elementos
+        const formulario = document.getElementById('formulario');
+        const nomeInput = document.getElementById('nome');
+        const opcaoSelect = document.getElementById('opcao');
+        const valorDiv = document.getElementById('valor');
+        const qrcodeDiv = document.getElementById('qrcode');
+        const copiarBtn = document.getElementById('copiar-link');
+        const confirmarBtn = document.getElementById('confirmar-btn');
+
+        // Atualiza o valor com base na seleção do presente e gera o Pix automaticamente
+        opcaoSelect.addEventListener('change', function () {
+            const valor = opcaoSelect.options[opcaoSelect.selectedIndex].text.split(' - ')[1];
+            valorDiv.textContent = `Valor: ${valor}`;
+            qrcodeDiv.innerHTML = '';  // Limpa o QR Code anterior
+            confirmarBtn.disabled = true; // Desabilita o botão até o pagamento
+            copiarBtn.style.display = 'none';  // Esconde o botão de copiar
+
+            // Gera automaticamente o QR Code e o link
+            gerarPix();
+        });
+
+        // Função para gerar o QR Code Pix e o link
+        function gerarPix() {
+            const valorSelecionado = opcaoSelect.value;
+            const nomeUsuario = nomeInput.value;
+
+            const chavePix = '71985063857';
+            const identificadorComerciante = 'AniversarioMarcell';
+            const descricaoTransacao = 'DoacaoAnimais';
+
+            const pixCode = `00020126360014BR.GOV.BCB.PIX0136${chavePix}52040000530398654041${valorSelecionado}5802BR5925${identificadorComerciante}6009${descricaoTransacao}6304someQRCodeHash`;
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(pixCode)}&size=150x150`;
+
+            // Exibe o QR Code na página
+            qrcodeDiv.innerHTML = `<img src="${qrCodeUrl}" alt="QR Code Pix">`;
+
+            // Exibe o botão de copiar link
+            copiarBtn.style.display = 'inline-block';
+
+            // Habilitar o botão de confirmar após gerar o QR Code
+            confirmarBtn.disabled = false;
+
+            // Armazena o link do Pix para ser copiado
+            copiarBtn.setAttribute('data-clipboard-text', pixCode);
+        }
+
+        // Função para copiar o link do Pix
+        copiarBtn.addEventListener('click', function () {
+            const pixCode = copiarBtn.getAttribute('data-clipboard-text');
+            // Usando a API Clipboard para copiar
+            navigator.clipboard.writeText(pixCode).then(() => {
+                alert("Link do Pix copiado com sucesso!");
+            }).catch((err) => {
+                console.error("Erro ao copiar o link: ", err);
+            });
+        });
+
+        // Enviar os dados para o Firebase
+        formulario.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const nome = nomeInput.value;
+            const opcao = opcaoSelect.value;
+
+            db.collection('confirmados').add({
+                nome: nome,
+                opcao: opcao,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+                .then(() => {
+                    alert('Sua presença foi confirmada! Obrigado pelo presente.');
+                    nomeInput.value = ''; // Limpa o campo
+                })
+                .catch((error) => {
+                    console.error('Erro ao salvar os dados: ', error);
+                    alert('Ocorreu um erro. Tente novamente.');
+                });
+        });
+    </script>
+</body>
+
+</html>
