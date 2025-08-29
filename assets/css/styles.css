@@ -1,4 +1,3 @@
-/* Reset básico de estilos */
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +6,7 @@
 
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #83b085;
+  background-color: #b9963a; /* A goldish color from the invitation */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,22 +31,25 @@ body {
   text-align: center;
 }
 
-.logo {
-  width: 150px;
-  margin-bottom: 20px;
+#formularioDiv {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  border: #eaeaea 2px solid;
 }
 
 h1 {
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: #b9963a; /* Same goldish color */
   margin-bottom: 10px;
 }
 
 p {
   font-size: 16px;
   color: #555;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 label {
@@ -70,12 +72,12 @@ select {
 
 input:focus,
 select:focus {
-  border-color: #4CAF50;
+  border-color: #b9963a; /* Focus color matches the invitation gold */
   outline: none;
 }
 
 button {
-  background-color: #4CAF50;
+  background-color: #b9963a; /* Gold color */
   color: white;
   border: none;
   padding: 12px 20px;
@@ -83,52 +85,20 @@ button {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 20px;
   width: 100%;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #a57a2b; /* Slightly darker gold for hover effect */
 }
 
 button:active {
-  background-color: #388e3c;
+  background-color: #8f671d; /* Darker gold when pressed */
 }
 
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
-}
-
-/* Estilos para o botão Copiar Link */
-#copiar-link {
-  background-color: #23a5c3;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-/* Efeito ao passar o mouse (hover) */
-#copiar-link:hover {
-  background-color: #0f5b6b;
-  transform: scale(1.05);
-}
-
-/* Efeito ao pressionar o botão (ativo) */
-#copiar-link:active {
-  background-color: #0f5b6b;
-  transform: scale(0.95);
-}
-
-/* Seção de QR Code */
-#qrcode {
-  margin-top: 8px;
-  display: block;
 }
 
 .valor {
@@ -140,18 +110,78 @@ button:disabled {
 h4 {
   font-size: 16px;
   color: #333;
-  margin-top: 20px;
   margin-bottom: 10px;
 }
 
-/* Responsividade */
+.event-details p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    border: #eaeaea 2px solid;
+}
+
+.event-details i {
+    color: #614112; 
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.gift-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.gift-option {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gift-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.gift-option img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.gift-option h5 {
+    font-size: 16px;
+    color: #614112;
+    margin-bottom: 5px;
+}
+
+.gift-option p {
+    font-size: 14px;
+    color: #666;
+}
+
+.gift-option.selected {
+    border: 2px solid #614112;
+    background-color: #f4d37f;
+}
+
+.gift-option.selected h5,
+.gift-option.selected p {
+    color: #fff;
+}
+
+
 @media (max-width: 480px) {
   .form-container {
     padding: 30px;
-  }
-
-  .logo {
-    width: 120px;
   }
 
   h1 {
